@@ -15,12 +15,13 @@ int toBinary(int num);
 int toOctal(int num);
 int toDecimal(int num);
 int toHexadecimal(int num);
+void exitProgram();
 
-//global declaration ng variable
-int num;	 	// decimal number to be provided by the user
-int arr[32]; 	// storage for the binary number
-int i = 0;	 	// counter
-int j = 0;	 	// counter din for the remainder
+// global declaration ng variable
+int num;	 // decimal number to be provided by the user
+int arr[32]; // storage for the binary number
+int i = 0;	 // counter
+int j = 0;	 // counter din for the remainder
 
 // main function
 int main()
@@ -30,14 +31,62 @@ int main()
 	printf("[1] Binary (base 2)\n");
 	printf("[2] Octal (base 8)\n");
 	printf("[3] Decimal (base 10)\n");
-	printf("[4] Hexadecimal (base 16) \n\n");
+	printf("[4] Hexadecimal (base 16) \n");
 	printf("[5] EXIT THE PROGRAM \n\n");
-	printf("Please select a number system to input: ");
 
-	int mode;	//
+	int mode; // to select mode
 
+	do
+	{
+		printf("\nPlease select a number system to input: ");
+		scanf("%d", &mode);
+	} while (mode > 1 || mode < 5);
 
-	scanf("%d", &mode);
+	switch (mode)
+	{
+	case 1:
+		inputBinary();
+		break;
+	case 2:
+		inputOctal();
+		break;
+	case 3:
+		inputDecimal();
+		break;
+	case 4:
+		inputHexadecimal();
+		break;
+	case 5:
+		exitProgram();
+		break;
+	}
+
+	return 0;
+} // end of main
+
+// input funtion with exeption handling
+int inputBinary()
+{
+	return 0;
+}
+
+int inputOctal()
+{
+	return 0;
+}
+int inputDecimal()
+{
+	return 0;
+}
+
+int inputHexadecimal()
+{
+	return 0;
+}
+
+// conversion function
+int toBinary(int num)
+{
 
 	if (num == 0)
 	{
@@ -57,37 +106,24 @@ int main()
 	}
 
 	return 0;
-} // end of main
-
-// input funtion with exeption handling
-int inputBinary()
-{
-}
-
-int inputOctal()
-{
-}
-int inputDecimal()
-{
-}
-
-int inputHexadecimal()
-{
-}
-
-// conversion function
-int toBinary(int num)
-{
 }
 
 int toOctal(int num)
 {
+	return 0;
 }
 
 int toDecimal(int num)
 {
+	return 0;
 }
 
 int toHexadecimal(int num)
 {
+	return 0;
+}
+
+void exitProgram()
+{
+	return;
 }
