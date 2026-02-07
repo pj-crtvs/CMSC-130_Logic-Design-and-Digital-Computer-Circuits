@@ -16,24 +16,28 @@ int toOctal(int num);
 int toDecimal(int num);
 int toHexadecimal(int num);
 
+//global declaration ng variable
+int num;	 	// decimal number to be provided by the user
+int arr[32]; 	// storage for the binary number
+int i = 0;	 	// counter
+int j = 0;	 	// counter din for the remainder
+
 // main function
 int main()
 {
-	// Hero Section ng SYSTEM
+	// Hero Section ng PROGRAM
 	printf("\n\n--NUMBER SYSTEM CONVERTER--\n\n");
 	printf("[1] Binary (base 2)\n");
 	printf("[2] Octal (base 8)\n");
 	printf("[3] Decimal (base 10)\n");
 	printf("[4] Hexadecimal (base 16) \n\n");
+	printf("[5] EXIT THE PROGRAM \n\n");
 	printf("Please select a number system to input: ");
 
-	int num;	 // decimal number to be provided by the user
-	int arr[32]; // storage for the binary number
-	int i = 0;	 // counter
-	int j = 0;	 // counter din for the remainder
+	int mode;	//
 
-	printf("Please enter a number:");
-	scanf("%d", &num);
+
+	scanf("%d", &mode);
 
 	if (num == 0)
 	{
