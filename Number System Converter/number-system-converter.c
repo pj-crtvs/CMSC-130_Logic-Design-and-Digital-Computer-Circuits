@@ -13,12 +13,15 @@ int inputBinary();
 int inputOctal();
 int inputDecimal();
 int inputHexadecimal();
+int inputBCD();
 int toBinary(int num);
 int toOctal(int num);
 int toDecimal(int num);
 int toHexadecimal(int num);
-void displayAllConversions(int decimalNum);
+void toBCD(int num);
+void displayConversions(int decimalNum, int convert);
 void exitProgram();
+void displayMenuAndGetInput(int *mode, int *convert);
 
 // global declaration ng mga variables
 int num;
@@ -30,49 +33,43 @@ int j = 0;	 // counter din for the remainder
 int main()
 {
 	int mode;
+	int convert;
 	int continueProgram = 1;
 
-	// Main program loop - allows multiple conversions
 	while (continueProgram)
 	{
-		// Hero Section ng PROGRAM
-		printf("\n\n--- NUMBER SYSTEM CONVERTER ---\n\n");
-		printf("[1] Binary (base 2)\n");
-		printf("[2] Octal (base 8)\n");
-		printf("[3] Decimal (base 10)\n");
-		printf("[4] Hexadecimal (base 16) \n");
-		printf("[5] EXIT THE PROGRAM \n\n");
+		displayMenuAndGetInput(&mode, &convert);
 
-		// Input validation loop ng number
-		do
+		if (mode == 6 || convert == 7)
 		{
-			printf("Please select a number system to input: ");
-			scanf("%d", &mode);
-			if (mode < 1 || mode > 5)
-			{
-				printf("Invalid input. Please selct from 1 to 5 only\n");
-			}
-		} while (mode < 1 || mode > 5);
+			exitProgram();
+			continueProgram = 0;
+			continue;
+		}
 
-		// For mode of input
+		int decimal = -1;
 		switch (mode)
 		{
 		case 1:
-			inputBinary();
+			decimal = inputBinary();
 			break;
 		case 2:
-			inputOctal();
+			decimal = inputOctal();
 			break;
 		case 3:
-			inputDecimal();
+			decimal = inputDecimal();
 			break;
 		case 4:
-			inputHexadecimal();
+			decimal = inputHexadecimal();
 			break;
 		case 5:
-			exitProgram();
-			continueProgram = 0;
+			decimal = inputBCD();
 			break;
+		}
+
+		if (decimal >= 0)
+		{
+			displayConversions(decimal, convert);
 		}
 	}
 
@@ -120,9 +117,7 @@ int inputBinary()
 	}
 
 	printf("\nBinary Input: %s\n", binaryNum);
-	displayAllConversions(decimal);
-
-	return 0;
+	return decimal;
 }
 
 int inputOctal()
@@ -164,9 +159,7 @@ int inputOctal()
 	}
 
 	printf("\nOctal Input: %s\n", octalNum);
-	displayAllConversions(decimal);
-
-	return 0;
+	return decimal;
 }
 
 int inputDecimal()
@@ -178,9 +171,7 @@ int inputDecimal()
 	scanf("%d", &decimal);
 
 	printf("\nDecimal Input: %d\n", decimal);
-	displayAllConversions(decimal);
-
-	return 0;
+	return decimal;
 }
 
 int inputHexadecimal()
@@ -231,9 +222,65 @@ int inputHexadecimal()
 	}
 
 	printf("\nHexadecimal Input: %s\n", hexNum);
-	displayAllConversions(decimal);
+	return decimal;
+}
 
-	return 0;
+int inputBCD()
+{
+	char bcdNum[200];
+	int decimal = 0;
+	int isValid = 0;
+	int len;
+	int digit;
+
+	printf("\n--- BCD INPUT MODE ---\n");
+	printf("Enter BCD (groups of 4 bits, e.g. 00010010 for 12): ");
+
+	while (!isValid)
+	{
+		scanf("%s", bcdNum);
+		len = strlen(bcdNum);
+		isValid = 1;
+
+		// Length must be multiple of 4
+		if (len % 4 != 0)
+		{
+			isValid = 0;
+			printf("Invalid BCD. Length must be multiple of 4 (e.g. 0001, 00010010).\n");
+			printf("Enter BCD: ");
+			continue;
+		}
+
+		// Each 4-bit group must be 0000-1001 (0-9)
+		for (i = 0; i < len; i += 4)
+		{
+			digit = 0;
+			for (j = 0; j < 4; j++)
+			{
+				if (bcdNum[i + j] != '0' && bcdNum[i + j] != '1')
+				{
+					isValid = 0;
+					printf("Invalid BCD. Only 0s and 1s allowed.\n");
+					printf("Enter BCD: ");
+					break;
+				}
+				digit = digit * 2 + (bcdNum[i + j] - '0');
+			}
+			if (!isValid)
+				break;
+			if (digit > 9)
+			{
+				isValid = 0;
+				printf("Invalid BCD. Each 4-bit group must be 0000-1001 (0-9).\n");
+				printf("Enter BCD: ");
+				break;
+			}
+			decimal = decimal * 10 + digit;
+		}
+	}
+
+	printf("\nBCD Input: %s\n", bcdNum);
+	return decimal;
 }
 
 int toBinary(int num)
@@ -349,17 +396,77 @@ int toHexadecimal(int num)
 	return 0;
 }
 
-// para idisplay lahat ng values
-void displayAllConversions(int decimalNum)
+void toBCD(int num)
+{
+	int isNegative = 0;
+	int digits[12];
+	int numDigits = 0;
+	int d;
+
+	if (num < 0)
+	{
+		isNegative = 1;
+		num = -num;
+	}
+
+	if (num == 0)
+	{
+		printf("BCD: 0000");
+		return;
+	}
+
+	// Extract decimal digits (reverse order)
+	while (num > 0)
+	{
+		digits[numDigits++] = num % 10;
+		num = num / 10;
+	}
+
+	printf("BCD: ");
+	if (isNegative)
+		printf("-");
+
+	// Convert each digit to 4-bit BCD (print from most significant)
+	for (j = numDigits - 1; j >= 0; j--)
+	{
+		d = digits[j];
+		printf("%d%d%d%d", (d >> 3) & 1, (d >> 2) & 1, (d >> 1) & 1, d & 1);
+	}
+}
+
+// para idisplay based on convert selection
+void displayConversions(int decimalNum, int convert)
 {
 	printf("\n--- CONVERSION RESULTS ---\n");
-	toBinary(decimalNum);
-	printf("\n");
-	toOctal(decimalNum);
-	printf("\n");
-	toDecimal(decimalNum);
-	printf("\n");
-	toHexadecimal(decimalNum);
+	switch (convert)
+	{
+	case 1:
+		toBinary(decimalNum);
+		break;
+	case 2:
+		toOctal(decimalNum);
+		break;
+	case 3:
+		toDecimal(decimalNum);
+		break;
+	case 4:
+		toHexadecimal(decimalNum);
+		break;
+	case 5:
+		toBCD(decimalNum);
+		break;
+	case 6:
+		toBinary(decimalNum);
+		printf("\n");
+		toOctal(decimalNum);
+		printf("\n");
+		toDecimal(decimalNum);
+		printf("\n");
+		toHexadecimal(decimalNum);
+		printf("\n");
+		toBCD(decimalNum);
+		break;
+	}
 	printf("\n");
 }
 
@@ -367,4 +474,48 @@ void exitProgram()
 {
 	printf("\nProgram terminated.\n\n");
 	return;
+}
+
+void displayMenuAndGetInput(int *mode, int *convert)
+{
+	// Hero Section ng PROGRAM
+	printf("\n\n--- NUMBER SYSTEM CONVERTER ---\n\n");
+	printf("What do you want to input: \n");
+	printf("[1] Binary (base 2)\n");
+	printf("[2] Octal (base 8)\n");
+	printf("[3] Decimal (base 10)\n");
+	printf("[4] Hexadecimal (base 16) \n");
+	printf("[5] Binary-Coded Decimal \n");
+	printf("[6] EXIT THE PROGRAM \n\n");
+
+	// Input validation loop ng number
+	do
+	{
+		printf("Please select a number system to input: ");
+		scanf("%d", mode);
+		if (*mode < 1 || *mode > 6)
+		{
+			printf("Invalid input. Please select from 1 to 6 only\n");
+		}
+	} while (*mode < 1 || *mode > 6);
+
+	// Saan icoconvert
+	printf("\n\nConvert to: \n");
+	printf("[1] Binary (base 2)\n");
+	printf("[2] Octal (base 8)\n");
+	printf("[3] Decimal (base 10)\n");
+	printf("[4] Hexadecimal (base 16) \n");
+	printf("[5] Binary-Coded Decimal \n");
+	printf("[6] All \n");
+	printf("[7] EXIT THE PROGRAM \n\n");
+
+	do
+	{
+		printf("Please select a number system to convert to: ");
+		scanf("%d", convert);
+		if (*convert < 1 || *convert > 7)
+		{
+			printf("Invalid input. Please select from 1 to 7 only\n");
+		}
+	} while (*convert < 1 || *convert > 7);
 }
